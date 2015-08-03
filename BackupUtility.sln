@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackupArchiver", "BackupArchiver\BackupArchiver.csproj", "{16175CCB-C353-418F-9C36-EBB50F9A4971}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlBackUpper", "SqlBackUpper\SqlBackUpper.csproj", "{71D309BA-CEEC-42C7-B344-F8B65DD5DD98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackupLibrary", "BackupLibrary\BackupLibrary.csproj", "{3F1F2CEB-414A-45BD-AE1C-4FE4EBBF4E9C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{16175CCB-C353-418F-9C36-EBB50F9A4971}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16175CCB-C353-418F-9C36-EBB50F9A4971}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16175CCB-C353-418F-9C36-EBB50F9A4971}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16175CCB-C353-418F-9C36-EBB50F9A4971}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71D309BA-CEEC-42C7-B344-F8B65DD5DD98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71D309BA-CEEC-42C7-B344-F8B65DD5DD98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71D309BA-CEEC-42C7-B344-F8B65DD5DD98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71D309BA-CEEC-42C7-B344-F8B65DD5DD98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F1F2CEB-414A-45BD-AE1C-4FE4EBBF4E9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F1F2CEB-414A-45BD-AE1C-4FE4EBBF4E9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F1F2CEB-414A-45BD-AE1C-4FE4EBBF4E9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F1F2CEB-414A-45BD-AE1C-4FE4EBBF4E9C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
