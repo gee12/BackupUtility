@@ -13,6 +13,7 @@ SqlBackUpper - executing SQL queries to databases for creating backup's.
   
 Путь можно задать в качестве аргумента. По-умолчанию ищет в рабочем каталоге с именем приложения и расширением ".cfg"
 3) 
+4)
 
 BackupArchiver - archiving files (databases backup's) to some destination folder (using 7-zip).
 
