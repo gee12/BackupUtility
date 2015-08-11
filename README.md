@@ -5,8 +5,8 @@ SqlBackUpper - executing SQL queries to databases for creating backup's.
 1) работа с архиватором 7-zip
 2) работа с конфигурационным xml файлом. Формат:
 \<Config [Аттрибуты]\>
-  <Folder [Аттрибуты]>
-  <Folder [Аттрибуты]>
+  \<Folder [Аттрибуты]>
+  \<Folder [Аттрибуты]>
   ...
 \</Config\>
 Аттрибуты корневого тега Config:
