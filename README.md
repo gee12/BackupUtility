@@ -13,8 +13,8 @@
   
   <PRE class="font-weight: bold;">
     &lt;Config [Атрибуты]>
-     &lt;Folder [Атрибуты]> 
-     &lt;Folder [Атрибуты]>
+     &lt;Connection [Атрибуты]> 
+     &lt;Connection [Атрибуты]>
       ...
     &lt;/Config>
   </PRE>
