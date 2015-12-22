@@ -20,17 +20,19 @@ namespace BackupArchiver
             Config config = new Config(args);
             if (!config.IsSetConfig)
             {
-                Log.Add("Config file is not set. Exit..");
+                //Log.Add("Config file is not set. Exit..");
+                OnFinish(config);
                 return;
             }
 
-            ProcessWindowStyle windowStyle = config.WindowStyle;
-            Display.SetWindowStyle(windowStyle);
+            //ProcessWindowStyle windowStyle = config.WindowStyle;
+            Display.SetWindowStyle(config.WindowStyle);
 
             // check 7zip existing
             Zip.Init(config.ZipPath);
             if (!Zip.IsExist)
             {
+                OnFinish(config);
                 //Log.Add("'7zip' is missing! Exit..");
                 //Console.ReadLine();
                 return;
@@ -54,11 +56,21 @@ namespace BackupArchiver
             else Log.Add("Error in config ([Folders] == null");
 
             // delete extra log files
+            //Log.AddLine();
+            //FileSystem.DeleteOldFiles(config.LogPath, config.MaxLogs, "*.log");
+            
+            //Log.Add("Finish");
+            OnFinish(config);
+        }
+
+        static void OnFinish(Config config)
+        {
+            if (config == null) return;
             Log.AddLine();
             FileSystem.DeleteOldFiles(config.LogPath, config.MaxLogs, "*.log");
-            
             Log.Add("Finish");
             //
+            ProcessWindowStyle windowStyle = config.WindowStyle;
             if ((windowStyle == ProcessWindowStyle.Normal || windowStyle == ProcessWindowStyle.Maximized) && config.ReadKeyInFinish)
             {
                 Console.WriteLine("Press any key to exit..");
