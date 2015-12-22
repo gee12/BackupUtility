@@ -19,12 +19,13 @@ namespace SqlBackUpper
             Config config = new Config(args);
             if (!config.IsSetConfig)
             {
-                Log.Add("Config file is not set. Exit..");
+                OnFinish(config);
+                //Log.Add("Config file is not set. Exit..");
                 return;
             }
 
-            ProcessWindowStyle windowStyle = config.WindowStyle;
-            Display.SetWindowStyle(windowStyle);
+            //ProcessWindowStyle windowStyle = config.WindowStyle;
+            Display.SetWindowStyle(config.WindowStyle);
 
             // connecting to the server & execute sql query
             List<Connection> connections = config.Connections;
@@ -59,15 +60,32 @@ namespace SqlBackUpper
             else Log.Add("Error in config ([Connections] == null");
 
             // delete extra log files
-            FileSystem.DeleteOldFiles(config.LogPath, config.MaxLogs, "*.log");
+            OnFinish(config);
+            //FileSystem.DeleteOldFiles(config.LogPath, config.MaxLogs, "*.log");
             
+            //Log.Add("Finish");
+            ////
+            //if ((windowStyle == ProcessWindowStyle.Normal || windowStyle == ProcessWindowStyle.Maximized) && config.ReadKeyInFinish)
+            //{
+            //    Console.WriteLine("Press any key to exit..");
+            //    Console.ReadKey();
+            //}
+        }
+
+        static void OnFinish(Config config)
+        {
+            if (config == null) return;
+            Log.AddLine();
+            FileSystem.DeleteOldFiles(config.LogPath, config.MaxLogs, "*.log");
             Log.Add("Finish");
             //
+            ProcessWindowStyle windowStyle = config.WindowStyle;
             if ((windowStyle == ProcessWindowStyle.Normal || windowStyle == ProcessWindowStyle.Maximized) && config.ReadKeyInFinish)
             {
                 Console.WriteLine("Press any key to exit..");
                 Console.ReadKey();
             }
         }
+
     }
 }
