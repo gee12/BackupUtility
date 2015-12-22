@@ -13,7 +13,7 @@ namespace BackupLibrary
         public const string CONFIG_ELEMENT_TAG = "Config";
 
         public const string LOG_PATH_TAG = "LogPath";
-        public const string MAX_LOGS_TAG = "MaxLogCount";
+        public const string MAX_LOGS_TAG = "MaxLogs";
         public const string READ_KEY_IN_FINISH_TAG = "ReadKeyInFinish";
         public const string WINDOW_STYLE_TAG = "WindowStyle";
         public string DEFAULT_CONFIG_PATH = System.AppDomain.CurrentDomain.FriendlyName + ".cfg";

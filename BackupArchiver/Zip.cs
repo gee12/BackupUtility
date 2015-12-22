@@ -9,16 +9,30 @@ using BackupLibrary;
 
 namespace BackupArchiver
 {
-    public class ZipCode
+    public class ZipCodes : Enumeration
     {
-        public int Code;
-        public string Message;
-        public ZipCode(int code, string message)
-        {
-            this.Code = code;
-            this.Message = message;
-        }
+        public static ZipCodes NoError = new ZipCodes(0, "No error");
+        public static ZipCodes Warning = new ZipCodes(1, "Warning (Non fatal error(s)). For example, one or more files were locked by some other application, so they were not compressed.");
+        public static ZipCodes FatalError = new ZipCodes(2, "Fatal error");
+        public static ZipCodes CommandLineError = new ZipCodes(7, "Command line error");
+        public static ZipCodes NotEnoughMemory = new ZipCodes(8, "Not enough memory for operation");
+        public static ZipCodes UserStoppedProcess = new ZipCodes(255, "User stopped the process");
+
+        public ZipCodes() : base() { }
+
+        public ZipCodes(int value, string displayName) : base (value, displayName) { }
     }
+
+    //public class ZipCode
+    //{
+    //    public int Code;
+    //    public string Message;
+    //    public ZipCode(int code, string message)
+    //    {
+    //        this.Code = code;
+    //        this.Message = message;
+    //    }
+    //}
 
     public class Zip
     {
@@ -27,13 +41,13 @@ namespace BackupArchiver
         public static string _7Z_DIR1 = @"C:\Program Files\7-Zip\";
         public static string _7Z_DIR2 = @"C:\Program Files (x86)\7-Zip\";
 
-        public static ZipCode[] ZIP_CODES = { 
-                                                new ZipCode(0, "No error"),
-                                            new ZipCode(1, "Warning (Non fatal error(s)). For example, one or more files were locked by some other application, so they were not compressed."),
-                                            new ZipCode(2, "Fatal error"),
-                                            new ZipCode(7, "Command line error"),
-                                            new ZipCode(8, "Not enough memory for operation"),
-                                            new ZipCode(255, "User stopped the process")};
+        //public static ZipCode[] ZipCodes = { 
+        //    new ZipCode(0, "No error"),
+        //    new ZipCode(1, "Warning (Non fatal error(s)). For example, one or more files were locked by some other application, so they were not compressed."),
+        //    new ZipCode(2, "Fatal error"),
+        //    new ZipCode(7, "Command line error"),
+        //    new ZipCode(8, "Not enough memory for operation"),
+        //    new ZipCode(255, "User stopped the process")};
 
         public static Boolean IsExist = false;
         public static string FullPath = /*Config.ZipPath +*/ ".\\" + _7Z_EXE;
@@ -108,7 +122,8 @@ namespace BackupArchiver
             string arguments = String.Format("{0} \"{1}\\{2}\" \"{3}\"", zipArgs, dest, archiveName, source);
             int result = AddToArchive(arguments);
 
-            Log.Add("Archiving: [{0}]\nResults: [{1}]", arguments, GetZipMessage(result));
+            //Log.Add("Archiving: [{0}]. Results: [{1}]", arguments, GetZipMessage(result));
+            Log.Add("Archiving: [{0}]. Results: [{1}]", arguments, Enumeration.DisplayNameFromValue<ZipCodes>(result));
 
             return result;
         }
@@ -144,13 +159,13 @@ namespace BackupArchiver
         /// </summary>
         /// <param name="exitCode"></param>
         /// <returns></returns>
-        public static string GetZipMessage(int exitCode)
-        {
-            foreach (ZipCode code in ZIP_CODES)
-            {
-                if (code.Code == exitCode) return code.Message;
-            }
-            return "Unknown exit code from 7-Zip";
-        }
+        //public static string GetZipMessage(int exitCode)
+        //{
+        //    foreach (ZipCode code in ZipCodes)
+        //    {
+        //        if (code.Code == exitCode) return code.Message;
+        //    }
+        //    return "Unknown exit code from 7-Zip";
+        //}
     }
 }

@@ -45,7 +45,8 @@ namespace BackupArchiver
                 {
                     Log.AddLine();
                     string archiveName = elem.HeadMask + String.Format(config.TailMask, DateTime.Now);
-                    if (Zip.AddTo_Zip_R_Y_Archive(elem.SourcePath, elem.DestPath, archiveName, config.ZipArgs) > 0)
+                    if (Zip.AddTo_Zip_R_Y_Archive(elem.SourcePath, elem.DestPath, archiveName, config.ZipArgs) == ZipCodes.NoError.Value)
+                        // delete old archives if no errors
                         FileSystem.DeleteOldFiles(elem.DestPath, elem.MaxArchives, elem.HeadMask + "*");
                     else Log.Add("Deleting old files in [{0}] will not be", elem.DestPath);
                 }
@@ -53,6 +54,7 @@ namespace BackupArchiver
             else Log.Add("Error in config ([Folders] == null");
 
             // delete extra log files
+            Log.AddLine();
             FileSystem.DeleteOldFiles(config.LogPath, config.MaxLogs, "*.log");
             
             Log.Add("Finish");
