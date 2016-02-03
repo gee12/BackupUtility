@@ -10,79 +10,106 @@ namespace BackupLibrary
 {
     public abstract class Config
     {
-        public const string CONFIG_ELEMENT_TAG = "Config";
+        private static readonly string ASSEMBLY_NAME = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 
+        public const string CONFIG_ELEMENT_TAG = "Config";
+        
         public const string LOG_PATH_TAG = "LogPath";
         public const string MAX_LOGS_TAG = "MaxLogs";
         public const string READ_KEY_IN_FINISH_TAG = "ReadKeyInFinish";
         public const string WINDOW_STYLE_TAG = "WindowStyle";
-        public string DEFAULT_CONFIG_PATH = System.AppDomain.CurrentDomain.FriendlyName + ".cfg";
 
-        public string LogPath = ".\\";
-        public int MaxLogs = 5;
-        public bool ReadKeyInFinish = true;
-        public ProcessWindowStyle WindowStyle = ProcessWindowStyle.Hidden;
+        public static string DEF_CONFIG_PATH = System.AppDomain.CurrentDomain.FriendlyName + ".cfg";
+        public const string DEF_LOG_PATH = ".\\";
+        public const int DEF_MAX_LOGS = 5;
+        public const bool DEF_READKEY_IN_FINISH = true;
+        public const ProcessWindowStyle DEF_WINDOW_STYLE = ProcessWindowStyle.Hidden;
+
+        public string LogPath { get; set; }
+        public int MaxLogs { get; set; }
+        public bool ReadKeyInFinish { get; set; }
+        public ProcessWindowStyle WindowStyle { get; set; }
 
         public bool IsSetConfig = false;
+        public string ConfigFilePath = DEF_CONFIG_PATH;
 
-        public Config(string configFileName)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Config(bool splitLog = true)
         {
-            //Init(configFileName);
+            Init(ASSEMBLY_NAME, DEF_CONFIG_PATH, splitLog);
         }
 
-        public Config(string[] args)
+        public Config(string assemblyName, bool splitLog = true)
         {
-            //Init(args);
+            Init(assemblyName, DEF_CONFIG_PATH, splitLog);
+        }
+
+        public Config(string assemblyName, string configFileFullName, bool splitLog = true)
+        {
+            Init(assemblyName, configFileFullName, splitLog);
+        }
+
+        public Config(string assemblyName, string[] args, bool splitLog = true)
+        {
+            Init(assemblyName, args, splitLog);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="args"></param>
-        public void Init(string[] args)
+        public virtual void Init(string assemblyName, string[] args, bool splitLog)
         {
+            LogPath = DEF_LOG_PATH;
+            MaxLogs = DEF_MAX_LOGS;
+            ReadKeyInFinish = DEF_READKEY_IN_FINISH;
+            WindowStyle = DEF_WINDOW_STYLE;
+
             // set new config file, if set as argument
             if (args != null && args.Length > 0)
             {
                 string newConfigName = args[0];
-                Init(newConfigName);
+                Init(assemblyName, newConfigName, splitLog);
             }
-            else SetConfig(DEFAULT_CONFIG_PATH);
+            else Init(assemblyName, DEF_CONFIG_PATH, splitLog);
         }
 
-        public void Init(string configFileName)
+        public virtual void Init(string assemblyName, string configFileFullName, bool splitLog)
         {
-            if (!SetConfig(configFileName))
+            if (!SetConfig(configFileFullName))
             {
                 // set default config file
-                SetConfig(DEFAULT_CONFIG_PATH);
+                SetConfig(DEF_CONFIG_PATH);
             }
+
+            // init log
+            Log.Init(assemblyName, LogPath, splitLog);
+            Log.Add("Config file [{0}] set successfully", configFileFullName);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        public bool SetConfig(string configFileName)
+        private bool SetConfig(string configFileFullName)
         {
-            if (new FileInfo(configFileName).Exists)
+            IsSetConfig = false;
+            this.ConfigFilePath = configFileFullName;
+
+            if (new FileInfo(configFileFullName).Exists)
             {
-                if (ReadConfig(configFileName))
+                if (ReadConfig(configFileFullName))
                 {
                     IsSetConfig = true;
-                    // init log
-                    Log.Init(LogPath);
-                    Log.Add("Config file [{0}] set successfully", configFileName);
-                    return true;
                 }
-                else Log.Add("Error with config file [{0}]", configFileName);
+                else Log.Add("Error with config file [{0}]", configFileFullName);
             }
             else
             {
-                Log.Add("Config file [{0}] is missing..!", configFileName);
+                Log.Add("Config file [{0}] is missing..!", configFileFullName);
             }
-            return false;
+            return IsSetConfig;
         }
 
         public abstract bool ReadConfig(string configFileName);
@@ -90,7 +117,6 @@ namespace BackupLibrary
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="reader"></param>
         public void ReadBaseElements(XmlTextReader reader)
         {
             if (reader == null) return;
@@ -101,20 +127,24 @@ namespace BackupLibrary
                 {
                     while (reader.MoveToNextAttribute())
                     {
-                        string value = reader.Value;
-                        switch (reader.Name)
-                        {
-                            case LOG_PATH_TAG: LogPath = value; break;
-                            case MAX_LOGS_TAG: MaxLogs = Int32.Parse(value); break;
-                            case READ_KEY_IN_FINISH_TAG: ReadKeyInFinish = Boolean.Parse(value); break;
-                            //   ?!
-                            case WINDOW_STYLE_TAG: WindowStyle = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), value); break;
-                        }
+                        //string value = reader.Value;
+                        //switch (reader.Name)
+                        //{
+                        //    case LOG_PATH_TAG: LogPath = value; break;
+                        //    case MAX_LOGS_TAG: MaxLogs = Int32.Parse(value); break;
+                        //    case READ_KEY_IN_FINISH_TAG: ReadKeyInFinish = Boolean.Parse(value); break;
+                        //    case WINDOW_STYLE_TAG: WindowStyle = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), value); break;
+                        //}
+
+                        ReadBaseAttributes(reader.Name, reader.Value);
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void ReadBaseAttributes(string name, string value)
         {
             switch (name)
@@ -124,6 +154,29 @@ namespace BackupLibrary
                 case READ_KEY_IN_FINISH_TAG: ReadKeyInFinish = Boolean.Parse(value); break;
                 case WINDOW_STYLE_TAG: WindowStyle = (ProcessWindowStyle)Enum.Parse(typeof(ProcessWindowStyle), value); break;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool WriteBaseAttributes(XmlTextWriter writer)
+        {
+            if (writer == null) return false;
+
+            try
+            {
+                writer.WriteAttributeString(LOG_PATH_TAG, LogPath);
+                writer.WriteAttributeString(MAX_LOGS_TAG, MaxLogs.ToString());
+                writer.WriteAttributeString(WINDOW_STYLE_TAG, WindowStyle.ToString());
+                writer.WriteAttributeString(READ_KEY_IN_FINISH_TAG, ReadKeyInFinish.ToString());
+                
+            }
+            catch (Exception ex)
+            {
+                Log.Add(ex.Message);
+                return false;
+            }
+            return true;
         }
     }
 }

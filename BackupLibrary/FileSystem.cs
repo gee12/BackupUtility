@@ -9,9 +9,6 @@ namespace BackupLibrary
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="files"></param>
-        /// <param name="dir"></param>
-        /// <returns></returns>
         public static bool IsFilesExist(string[] files, string dir)
         {
             foreach (string fileName in files)
@@ -25,8 +22,6 @@ namespace BackupLibrary
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="files"></param>
-        /// <returns></returns>
         public static bool IsFilesExist(string[] files)
         {
             foreach (string fileName in files)
@@ -40,7 +35,6 @@ namespace BackupLibrary
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="dirPath"></param>
         public static void CreateIfMissing(string dirPath)
         {
             try
@@ -65,9 +59,6 @@ namespace BackupLibrary
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="sourceDirName"></param>
-        /// <param name="destDirName"></param>
-        /// <param name="copySubDirs"></param>
         public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
         {
             // Get the subdirectories for the specified directory.
@@ -109,8 +100,6 @@ namespace BackupLibrary
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="maxCount"></param>
         public static void DeleteOldFiles(string path, int maxCount, string mask="*.*")
         {
             DirectoryInfo dir = null;
@@ -148,7 +137,6 @@ namespace BackupLibrary
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="path"></param>
         public static void DeleteFiles(string path)
         {
             DirectoryInfo dir = new DirectoryInfo(path);
@@ -165,7 +153,6 @@ namespace BackupLibrary
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="fileName"></param>
         public static void DeleteFile(string fileName)
         {
             File.Delete(fileName);
@@ -176,6 +163,49 @@ namespace BackupLibrary
         {
             file.Delete();
             Log.Add("File [{0}] was deleted", file.Name);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string BytesToString(long byteCount)
+        {
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+            if (byteCount == 0)
+                return "0" + suf[0];
+            long bytes = Math.Abs(byteCount);
+            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+            return (Math.Sign(byteCount) * num).ToString() + suf[place];
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string GetFileLenth(string fileName)
+        {
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+            string zeroBytes = "0" + suf[0];
+            FileInfo f;
+            long byteCount = 0;
+
+            try
+            {
+                f = new FileInfo(fileName);
+                byteCount = f.Length;
+            }
+            catch (Exception ex)
+            {
+                Log.Add("Error with getting file size: [{0}]", fileName);
+            }
+
+            if (byteCount == 0)
+                return zeroBytes;
+
+            long bytes = Math.Abs(byteCount);
+            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+            return (Math.Sign(byteCount) * num).ToString() + suf[place];
         }
     }
 

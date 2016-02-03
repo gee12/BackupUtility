@@ -16,16 +16,22 @@ namespace BackupLibrary
 
         private static bool isFirstStart = true;
 
-        public static void Init(string logPath)
+        //public static void Init(string logPath)
+        //{
+        //    Init(logPath, System.Reflection.Assembly.GetExecutingAssembly().GetName().Name);
+        //}
+
+        public static void Init(string assemblyName, string logPath, bool splitLog)
         {
             try
             {
                 DirectoryInfo logDir = new DirectoryInfo(logPath);
                 if (!logDir.Exists) logDir.Create();
 
-                CurrentLogFileName = String.Format("{0}\\{1}_{2:dd-MM-yyyy_HH-mm-ss}_log.log",
-                    logPath, System.Reflection.Assembly.GetExecutingAssembly().GetName().Name, DateTime.Now);
-               
+                CurrentLogFileName = (splitLog) 
+                    ? String.Format("{0}\\{1}_{2:dd-MM-yyyy_HH-mm-ss}_log.log", logPath, assemblyName, DateTime.Now)
+                    : String.Format("{0}\\{1}_log.log", logPath, assemblyName);
+
                 Log.Add("Log file: [{0}]", CurrentLogFileName);
             }
             catch (Exception ex)
@@ -37,8 +43,6 @@ namespace BackupLibrary
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="s"></param>
-        /// <param name="args"></param>
         public static void Add(string s, params object[] args)
         {
             string res = String.Format(s, args);

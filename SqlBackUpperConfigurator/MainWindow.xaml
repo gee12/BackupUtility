@@ -1,0 +1,141 @@
+﻿<Window x:Class="SBUConfigurator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:SBUConfigurator"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        Title="Конфигуратор SqlBackUpper" Height="600" Width="800" Icon="ico.ico">
+    <Window.Resources>
+        <Image x:Key="add_32" Source="Resources/add_32.png"/>
+        <Image x:Key="add_32_2" Source="Resources/add_32.png"/>
+        <Image x:Key="edit_32" Source="Resources/pencil_32.png"/>
+        <Image x:Key="edit_32_2" Source="Resources/pencil_32.png"/>
+        <Image x:Key="delete_32" Source="Resources/delete_32.png"/>
+        <Image x:Key="delete_32_2" Source="Resources/delete_32.png"/>
+        <Image x:Key="cancel_32" Source="Resources/cancel_32.png"/>
+        <Image x:Key="accept_32" Source="Resources/accept_32.png"/>
+        <Style x:Key="dataGridHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="local:AppCommands.ApplyCommand" Executed="OnCommadExecute"/>
+        <CommandBinding Command="local:AppCommands.CancelCommand" Executed="OnCommadExecute"/>
+        <!---->
+        <CommandBinding Command="local:AppCommands.AddConnectCommand" Executed="OnCommadExecute"/>
+        <CommandBinding Command="local:AppCommands.EditConnectCommand" Executed="OnCommadExecute" CanExecute="OnConnectCommadExecute"/>
+        <CommandBinding Command="local:AppCommands.DeleteConnectCommand" Executed="OnCommadExecute" CanExecute="OnConnectCommadExecute"/>
+        <!---->
+        <CommandBinding Command="local:AppCommands.AddServerTypeCommand" Executed="OnCommadExecute"/>
+        <CommandBinding Command="local:AppCommands.EditServerTypeCommand" Executed="OnCommadExecute" CanExecute="OnServerTypeCommadExecute"/>
+        <CommandBinding Command="local:AppCommands.DeleteServerTypeCommand" Executed="OnCommadExecute" CanExecute="OnServerTypeCommadExecute"/>
+    </Window.CommandBindings>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TabControl>
+            <TabItem Header="Общее">
+                <Grid x:Name="gBase">
+                    <StackPanel Margin="5">
+                        <local:TextBox Value="{Binding Path=BackupNameMask, Mode=TwoWay}" Label="Маска имени бэкапа:  " ControlSize="*"
+                                       Margin="0,10"/>
+                        
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Путь к лог-файлу:        " Margin="-5,0" ToolTip="Путь к лог-файлу"/>
+                            <TextBox x:Name="tbTempPath" Grid.Column="1" 
+                                            Text="{Binding Path=LogPath, Mode=TwoWay}"  />
+                            <Button x:Name="bTempPathShowDialog"  Grid.Column="2" ToolTip="Выбрать каталог"
+                                                Height="23" Width="25" Content="..."  Margin="5,0,0,0"/>
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Label Content="Максимум логов:       " Margin="-4,0,0,0"/>
+                            <xctk:IntegerUpDown x:Name="tbLogClear" Value="{Binding Path=MaxLogs, Mode=TwoWay}"
+                                               Minimum="1" Width="60"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                            <Label Content="Стиль окна:                 " Margin="-5,0,0,0" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="cbNotifLevel"  Margin="0,0" Width="150" TabIndex="7" Height="25"
+                                    SelectedItem="{Binding Path=WindowStyle, Mode=TwoWay}"
+                                    DisplayMemberPath="DisplayName" />
+                        </StackPanel>
+                        
+                        <CheckBox Content="Ожидать нажатие клавиши для выхода" IsChecked="{Binding Path=ReadKeyInFinish, Mode=TwoWay}"/>
+
+                        <!--<local:TextBox Value="{Binding Path=BackupNameMask, Mode=TwoWay}" Label="Маска имени бэкапа: " ControlSize="*"/>-->
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Соединения">
+                <Grid Margin="0,0,0,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Margin="5,5,0,0">
+                        <local:ActionButton Content="{StaticResource add_32}" Margin="0,0" Command="local:AppCommands.AddConnectCommand" ToolTip="Создать новый"/>
+                        <local:ActionButton Content="{StaticResource edit_32}" Margin="5,0,0,0" Command="local:AppCommands.EditConnectCommand" ToolTip="Изменить выбранный"/>
+                        <local:ActionButton Content="{StaticResource delete_32}" Margin="5,0,0,0" Command="local:AppCommands.DeleteConnectCommand" ToolTip="Удалить выбранный"/>
+                    </StackPanel>
+
+                    <local:GridView Grid.Row="1" Margin="0,5,0,0" x:Name="dgConnections">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Сервер" Binding="{Binding Server}" Width="*" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
+                            <DataGridTextColumn Header="Тип сервера" Binding="{Binding ServerType.Name}" Width="*" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
+                            <DataGridTextColumn Header="База данных" Binding="{Binding Database}" Width="*" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
+                            <DataGridTextColumn Header="Пользователь" Binding="{Binding User}" Width="*" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
+                            <DataGridTextColumn Header="Пароль" Binding="{Binding Password}" Width="*" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
+                            <DataGridTextColumn Header="Путь" Binding="{Binding BackupPath}" Width="*" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
+                            <DataGridTextColumn Header="   Макс.&#x0a; бэкапов" Binding="{Binding MaxBackups}" Width="60"/>
+                        </DataGrid.Columns>
+                    </local:GridView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Типы серверов">
+                <Grid Margin="0,0,0,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Margin="5,5,0,0">
+                        <local:ActionButton Content="{StaticResource add_32_2}" Margin="0,0" Command="local:AppCommands.AddServerTypeCommand" ToolTip="Создать новый"/>
+                        <local:ActionButton Content="{StaticResource edit_32_2}" Margin="5,0,0,0" Command="local:AppCommands.EditServerTypeCommand" ToolTip="Изменить выбранный"/>
+                        <local:ActionButton Content="{StaticResource delete_32_2}" Margin="5,0,0,0" Command="local:AppCommands.DeleteServerTypeCommand" ToolTip="Удалить выбранный"/>
+                    </StackPanel>
+
+                    <local:GridView Grid.Row="1" Margin="0,5,0,0" x:Name="dgServerTypes">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="40" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
+                            <DataGridTextColumn Header="Имя" Binding="{Binding Name}" Width="180" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
+                            <DataGridTextColumn Header="Строка подключения" Binding="{Binding ConnectionStringMask}" Width="*" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
+                            <DataGridTextColumn Header="Маска SQL-запроса" Binding="{Binding SqlQueryMask}" Width="*" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
+                        </DataGrid.Columns>
+                    </local:GridView>
+                </Grid>
+            </TabItem>
+           
+        </TabControl>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Background="LightGray">
+
+            <local:ActionButton x:Name="bApply" Height="40" Width="40" ToolTip="Сохранить" Command="local:AppCommands.ApplyCommand"
+                    Margin="10" Content="{StaticResource accept_32}" HorizontalAlignment="Left" VerticalAlignment="Top" />
+            <local:ActionButton x:Name="bCancel" Height="40" Width="40" ToolTip="Отмена" Command="local:AppCommands.CancelCommand"
+                    Margin="0,10,10,10" Content="{StaticResource cancel_32}" HorizontalAlignment="Left" VerticalAlignment="Top" />
+
+            <TextBlock x:Name="tbOnEditing" Text="На редактировании у пользователя" VerticalAlignment="Center" Foreground="DarkRed"
+                       Visibility="Collapsed"/>
+
+        </StackPanel>
+
+    </Grid>
+</Window>

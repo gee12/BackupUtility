@@ -1,0 +1,57 @@
+﻿<local:InputControl x:Class="SBUConfigurator.TextBox"
+					xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+					xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+					xmlns:local="clr-namespace:SBUConfigurator"
+					mc:Ignorable="d"
+					x:Name="_this">
+    <local:InputControl.InternalContent>
+        <TextBox x:Name="InternalTextBox"
+                 x:FieldModifier="public"
+				 HorizontalAlignment="Stretch"
+				 VerticalAlignment="Stretch"
+				 VerticalContentAlignment="Top"
+				 AcceptsReturn="{Binding Path=AcceptsReturn, ElementName=_this}"
+                 TextWrapping="{Binding Path=TextWrapping, ElementName=_this}"
+                 VerticalScrollBarVisibility="{Binding Path=VertScrollVisibility, ElementName=_this}"
+                 HorizontalScrollBarVisibility="{Binding Path=HorizScrollVisibility, ElementName=_this}"
+				 TabIndex="{Binding Path=TabIndex, ElementName=_this}"
+				 IsTabStop="{Binding Path=InternalIsTabStop, ElementName=_this}"
+				 IsReadOnly="{Binding Path=InternalIsReadOnly, ElementName=_this}"
+                 MaxLength="{Binding Path=InternalMaxLength, ElementName=_this}"  >
+            <TextBox.Text>
+                <Binding Path="Value" ElementName="_this" Mode="TwoWay" 
+                         UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" >
+                    <Binding.ValidationRules>
+                        <DataErrorValidationRule />
+                        <!--<ExceptionValidationRule />-->
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+            <TextBox.Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Setter Property="Validation.ErrorTemplate">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <DockPanel LastChildFill="True">
+                                    <!--<TextBlock DockPanel.Dock="Right" Foreground="Red" FontSize="14" FontWeight="Bold"
+                                                       Text="*"/>-->
+                                    <Border BorderBrush="Red" BorderThickness="1">
+                                        <AdornedElementPlaceholder Name="adornerPlaceholder"/>
+                                    </Border>
+                                </DockPanel>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="Validation.HasError" Value="True">
+                            <Setter Property="ToolTip"
+                                    Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+    </local:InputControl.InternalContent>
+</local:InputControl>

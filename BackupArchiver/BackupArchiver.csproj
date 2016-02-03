@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config.cs" />
+    <Compile Include="BackupArchiverConfig.cs" />
     <Compile Include="Folder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -55,9 +55,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BackupLibrary\BackupLibrary.csproj">
+    <ProjectReference Include="..\BackupLibrary\BackupLib.csproj">
       <Project>{3f1f2ceb-414a-45bd-ae1c-4fe4ebbf4e9c}</Project>
-      <Name>BackupLibrary</Name>
+      <Name>BackupLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -6,17 +6,22 @@ using System.Configuration;
 using System.Diagnostics;
 using BackupLibrary;
 using System.Reflection;
+using SqlBackUpperLib;
 
 namespace SqlBackUpper
 {
+
     class Program
     {
+        public static readonly string ASSEMBLY_NAME = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+
         static void Main(string[] args)
         {
             Display.SetWindowStyle(ProcessWindowStyle.Hidden);
 
             // init config file (and current log file)
-            Config config = new Config(args);
+            //SqlBackUpperConfig config = new SqlBackUpperConfig(args);
+            SqlBackUpperLibConfig config = new SqlBackUpperLibConfig(ASSEMBLY_NAME, args);
             if (!config.IsSetConfig)
             {
                 OnFinish(config);
@@ -41,7 +46,7 @@ namespace SqlBackUpper
                         SqlQuery.ExecuteGroup(group, config.ConnectionGroupMask, config.Timeout, config.SqlQueryMask, config.BackupNameMask);
                         foreach (Connection conn in group.Connections)
                         {
-                            FileSystem.DeleteOldFiles(conn.BackupPath, conn.MaxBackups, conn.BaseName + "*");
+                            FileSystem.DeleteOldFiles(conn.BackupPath, conn.MaxBackups, conn.Database + "*");
                         }
                     }
                 }
@@ -51,13 +56,13 @@ namespace SqlBackUpper
                     foreach (Connection conn in connections)
                     {
                         Log.AddLine();
-                        string backupName = conn.BaseName + String.Format(config.BackupNameMask, DateTime.Now);
+                        string backupName = conn.Database + String.Format(config.BackupNameMask, DateTime.Now);
                         SqlQuery.Execute(conn, config.ConnectionMask, config.Timeout, config.SqlQueryMask, backupName);
-                        FileSystem.DeleteOldFiles(conn.BackupPath, conn.MaxBackups, conn.BaseName + "*");
+                        FileSystem.DeleteOldFiles(conn.BackupPath, conn.MaxBackups, conn.Database + "*");
                     }
                 }
             }
-            else Log.Add("Error in config ([Connections] == null");
+            else Log.Add("Error in config ([Connections] == null)");
 
             // delete extra log files
             OnFinish(config);
@@ -75,8 +80,12 @@ namespace SqlBackUpper
         static void OnFinish(Config config)
         {
             if (config == null) return;
+
+            string logsMask = ASSEMBLY_NAME + "*.log";
             Log.AddLine();
-            FileSystem.DeleteOldFiles(config.LogPath, config.MaxLogs, "*.log");
+            FileSystem.DeleteOldFiles(config.LogPath, config.MaxLogs, logsMask);
+            //Log.AddLine();
+            //FileSystem.DeleteOldFiles(config.LogPath, config.MaxLogs, "*.log");
             Log.Add("Finish");
             //
             ProcessWindowStyle windowStyle = config.WindowStyle;

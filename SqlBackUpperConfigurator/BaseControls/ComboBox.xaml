@@ -1,0 +1,25 @@
+﻿<input:InputControl x:Class="SBUConfigurator.ComboBox"
+					xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:input="clr-namespace:SBUConfigurator"
+					x:Name="_this">
+    <input:InputControl.InternalContent>
+        <ComboBox x:Name="InternalComboBox"
+				 x:FieldModifier="public"
+				 HorizontalAlignment="Stretch"
+				 VerticalAlignment="Stretch"
+				 VerticalContentAlignment="Center"
+                 IsSynchronizedWithCurrentItem="False"
+                 SelectedIndex="0"
+                 IsEditable="{Binding Path=IsEditable, ElementName=_this}"
+                 Text="{Binding Path=Text, ElementName=_this}"
+				 TabIndex="{Binding Path=TabIndex, ElementName=_this}"
+				 IsTabStop="{Binding Path=InternalIsTabStop, ElementName=_this}"
+				 IsReadOnly="{Binding Path=InternalIsReadOnly, ElementName=_this}"
+                 SelectedValue="{Binding Path=SelectedValue, ElementName=_this}"
+                 ItemsSource="{Binding Path=ItemsSource, ElementName=_this}"
+                 SelectedItem="{Binding Path=SelectedItem, ElementName=_this}"
+                 DisplayMemberPath="{Binding Path=DisplayMemberPath, ElementName=_this}"
+                 SelectedValuePath="{Binding Path=SelectedValuePath, ElementName=_this}"/>
+    </input:InputControl.InternalContent>
+</input:InputControl>

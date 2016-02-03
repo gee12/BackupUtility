@@ -8,16 +8,13 @@ namespace BackupArchiver
 {
     class Program
     {
+
         static void Main(string[] args)
         {
-            //Application.ThreadException += new ThreadExceptionEventHandler(AppThreadException);
-            //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(AppDomainException);
-            //AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve); 
-
             Display.SetWindowStyle(ProcessWindowStyle.Hidden);
 
             // init config file (and current log file)
-            Config config = new Config(args);
+            BackupArchiverConfig config = new BackupArchiverConfig(args);
             if (!config.IsSetConfig)
             {
                 //Log.Add("Config file is not set. Exit..");
@@ -43,14 +40,20 @@ namespace BackupArchiver
             List<Folder> folders = config.Folders;
             if (folders != null)
             {
-                foreach (Folder elem in folders)
+                int i = 1;
+                foreach (Folder folder in folders)
                 {
                     Log.AddLine();
-                    string archiveName = elem.HeadMask + String.Format(config.TailMask, DateTime.Now);
-                    if (Zip.AddTo_Zip_R_Y_Archive(elem.SourcePath, elem.DestPath, archiveName, config.ZipArgs) == ZipCodes.NoError.Value)
+                    Log.Add(">>> Task {0}", i);
+
+                    string archiveName = folder.HeadMask + String.Format(config.TailMask, DateTime.Now);
+                    if (Zip.AddToZipArchive(folder.SourcePath, folder.DestPath, archiveName, config.ZipArgs) == ZipCodes.NoError.Value)
                         // delete old archives if no errors
-                        FileSystem.DeleteOldFiles(elem.DestPath, elem.MaxArchives, elem.HeadMask + "*");
-                    else Log.Add("Deleting old files in [{0}] will not be", elem.DestPath);
+                        FileSystem.DeleteOldFiles(folder.DestPath, folder.MaxArchives, folder.HeadMask + "*");
+                    else Log.Add("Deleting old files in [{0}] will not be", folder.DestPath);
+
+                    Log.Add("<<< Task {0}", i);
+                    i++;
                 }
             }
             else Log.Add("Error in config ([Folders] == null");
@@ -66,8 +69,12 @@ namespace BackupArchiver
         static void OnFinish(Config config)
         {
             if (config == null) return;
+
+            string logsMask = BackupArchiverConfig.ASSEMBLY_NAME + "*.log";
             Log.AddLine();
-            FileSystem.DeleteOldFiles(config.LogPath, config.MaxLogs, "*.log");
+            FileSystem.DeleteOldFiles(config.LogPath, config.MaxLogs, logsMask);
+            //Log.AddLine();
+            //FileSystem.DeleteOldFiles(config.LogPath, config.MaxLogs, "*.log");
             Log.Add("Finish");
             //
             ProcessWindowStyle windowStyle = config.WindowStyle;

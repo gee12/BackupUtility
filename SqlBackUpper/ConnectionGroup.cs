@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BackupLibrary;
+using SqlBackUpperLib;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,9 +9,9 @@ namespace SqlBackUpper
     public class ConnectionGroup
     {
         public List<Connection> Connections;
-        public string UserName = "";
+        public string User = "";
         public string Password = "";
-        public string InstName = "";
+        public string Server = "";
 
         /// <summary>
         /// 
@@ -24,8 +26,8 @@ namespace SqlBackUpper
         /// </summary>
         public ConnectionGroup(Connection conn)
         {
-            InstName = conn.InstName;
-            UserName = conn.UserName;
+            Server = conn.Server;
+            User = conn.User;
             Password = conn.Password;
             Connections = new List<Connection>();
             Connections.Add(conn);
@@ -34,7 +36,6 @@ namespace SqlBackUpper
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="conn"></param>
         public void Add(Connection conn)
         {
             Connections.Add(conn);
@@ -43,8 +44,6 @@ namespace SqlBackUpper
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="connections"></param>
-        /// <returns></returns>
         public static List<ConnectionGroup> SpritToGroups(List<Connection> connections)
         {
             if (connections == null) return null;
@@ -56,7 +55,7 @@ namespace SqlBackUpper
                 // find right group
                 foreach(ConnectionGroup group in groups)
                 {
-                    if (group.InstName.Equals(conn.InstName))
+                    if (group.Server.Equals(conn.Server))
                     {
                         group.Add(conn);
                         isUniqueConn = false;

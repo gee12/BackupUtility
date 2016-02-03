@@ -33,26 +33,36 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Security">
+      <HintPath>..\packages\Npgsql.2.2.7\lib\net20\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\packages\Npgsql.2.2.7\lib\net20\Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config.cs" />
+    <Compile Include="SqlBackUpperConfig.cs" />
     <Compile Include="ConnectionGroup.cs" />
-    <Compile Include="Connection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlQuery.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BackupLibrary\BackupLibrary.csproj">
+    <ProjectReference Include="..\BackupLibrary\BackupLib.csproj">
       <Project>{3f1f2ceb-414a-45bd-ae1c-4fe4ebbf4e9c}</Project>
-      <Name>BackupLibrary</Name>
+      <Name>BackupLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SqlBackUpperLib\SqlBackUpperLib.csproj">
+      <Project>{214b4e71-68f6-40fd-8ad5-e5b86aefcd33}</Project>
+      <Name>SqlBackUpperLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="SBUConfigurator.ServerTypeDataControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:SBUConfigurator"
+        Name="_this"
+		Width="400" >
+    <Grid>
+        <StackPanel>
+            <local:TextBox x:Name="tbName" Label="Имя:" TabIndex="0" Value="{Binding Path=Name, Mode=TwoWay}" 
+                    ControlSize="*" LabelPosition="Top" />
+            <local:TextBox x:Name="tbConnectionStringMask" Label="Строка подключения:" TabIndex="1" Value="{Binding Path=ConnectionStringMask, Mode=TwoWay}" 
+                    ControlSize="*" LabelPosition="Top" LinesNumber="2" TextWrapping="Wrap"/>
+            <local:TextBox x:Name="tbSqlQueryMask" Label="Маска SQL-запроса:" TabIndex="2" Value="{Binding Path=SqlQueryMask, Mode=TwoWay}" 
+                    ControlSize="*" LabelPosition="Top" LinesNumber="2" TextWrapping="Wrap"/>
+
+            <!--<Button x:Name="bViewOnMap" Height="30" Margin="0,10,0,0" Command="local:AppCommands.ShowOnMapCommand" ToolTip="Показать адрес на карте">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Tickets;component/Resources/world_32.png"/>
+                    <TextBlock Text="Показать на карте" VerticalAlignment="Center" Margin="10,5"/>
+                </StackPanel>
+            </Button>-->
+
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -85,7 +85,6 @@ namespace BackupArchiver
         /// <summary>
         /// 
         /// </summary>
-        /// <returns></returns>
         public static bool Is7ZipExist()
         {
             return (FileSystem.IsFilesExist(_7Z_FILES)
@@ -96,34 +95,46 @@ namespace BackupArchiver
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="dest"></param>
-        /// <param name="archiveName"></param>
-        /// <returns></returns>
-        public static int AddTo_Zip_R_Y_Archive(string source, string dest, string archiveName, string zipArgs)
+        public static int AddToZipArchive(string source, string dest, string archiveName, string zipArgs)
         {
+            Log.Add("Start: [{0:dd.MM.yyy HH:mm:ss.ff}]", DateTime.Now);
             try
             {
                 DirectoryInfo srcDir = new DirectoryInfo(source);
                 if (!srcDir.Exists)
                 {
-                    Log.Add("Archiving canceled..");
-                    Log.Add("(missing source directory: [{0}])", source);
+                    Log.Add("Archiving canceled.. (missing source directory: [{0}])", source);
+                    //Log.Add("(missing source directory: [{0}])", source);
                     return -1;
                 }
             }
             catch(Exception ex)
             {
-                Log.Add("Archiving canceled..");
-                Log.Add("(invalid source path: [{0}])", source);
+                Log.Add("Archiving canceled.. (invalid source path: [{0}])", source);
+                //Log.Add("(invalid source path: [{0}])", source);
                 return -1;
             }
 
             string arguments = String.Format("{0} \"{1}\\{2}\" \"{3}\"", zipArgs, dest, archiveName, source);
-            int result = AddToArchive(arguments);
 
+            DateTime start = DateTime.Now;
+            
+            // 
+            int result = AddToZipArchive(arguments);
+
+            DateTime end = DateTime.Now;
+            TimeSpan time = end - start;
+            
             //Log.Add("Archiving: [{0}]. Results: [{1}]", arguments, GetZipMessage(result));
-            Log.Add("Archiving: [{0}]. Results: [{1}]", arguments, Enumeration.DisplayNameFromValue<ZipCodes>(result));
+            string sres = Enumeration.DisplayNameFromValue<ZipCodes>(result);
+            //string stime = TimeToString(time);
+            string size = FileSystem.GetFileLenth(dest + "\\" + archiveName);
+            //Log.Add("Archiving: [{0}] \nResults: [{1}] \nTime: [{2}] \nSize: [{3}]", arguments, sres, stime, size);
+            Log.Add("Archiving: [{0}]", arguments);
+            Log.Add("Results: [{0}]", sres);
+            Log.Add("Time: [{0:g}]", time);
+            Log.Add("Size: [{0}]", size);
+            Log.Add("End: [{0:dd.MM.yyy HH:mm:ss.ff}]", DateTime.Now);
 
             return result;
         }
@@ -131,9 +142,7 @@ namespace BackupArchiver
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="arguments"></param>
-        /// <returns></returns>
-        public static int AddToArchive(string arguments)
+        public static int AddToZipArchive(string arguments)
         {
             ProcessStartInfo start = new ProcessStartInfo(FullPath, arguments);
             start.WindowStyle = Display.WindowStyle;
@@ -157,8 +166,6 @@ namespace BackupArchiver
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="exitCode"></param>
-        /// <returns></returns>
         //public static string GetZipMessage(int exitCode)
         //{
         //    foreach (ZipCode code in ZipCodes)
@@ -166,6 +173,12 @@ namespace BackupArchiver
         //        if (code.Code == exitCode) return code.Message;
         //    }
         //    return "Unknown exit code from 7-Zip";
+        //}
+
+        //public static string TimeToString(TimeSpan ts)
+        //{
+        //    string format = (ts.Days > 0) ? "dd days hh:mm:ss.ff" : "ololo hh:mm";
+        //    return string.Format("{0:" + format + "}", ts);
         //}
     }
 }
