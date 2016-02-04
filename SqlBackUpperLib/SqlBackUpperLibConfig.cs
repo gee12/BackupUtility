@@ -65,7 +65,7 @@ namespace SqlBackUpperLib
 
         void Init()
         {
-            BackupNameMask = DEF_BACKUP_NAME_MASK;
+            //BackupNameMask = DEF_BACKUP_NAME_MASK;
         }
 
         /// <summary>

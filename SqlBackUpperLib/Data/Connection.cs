@@ -46,12 +46,21 @@ namespace SqlBackUpperLib
         {
             foreach (var conn in connections)
             {
+                bool founded = false;
                 foreach (var st in serverTypes)
                 {
                     if (conn.serverTypeId == st.Id)
                     {
                         conn.serverType = st;
+                        founded = true;
+                        break;
                     }
+                }
+                //
+                if (!founded)
+                {
+                    //conn.serverTypeId = -1;
+                    conn.serverType = null;
                 }
             }
         }

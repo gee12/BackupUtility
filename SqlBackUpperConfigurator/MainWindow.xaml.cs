@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,10 +40,44 @@ namespace SBUConfigurator
             this.connections = new ObservableCollection<Connection>(config.Connections);
             this.serverTypes = new ObservableCollection<ServerType>(config.ServerTypes);
 
+            //cbWindowsStyle.ItemsSource = Enum.GetValues(typeof(ProcessWindowStyle)).Cast<ProcessWindowStyle>(); ;
             dgConnections.ItemsSource = connections;
             dgServerTypes.ItemsSource = serverTypes;
 
+            bLogPathShowDialog.Click += LogPathShowDialog;
+            dgConnections.MouseDoubleClick += DataGridMouseDoubleClick;
+            dgConnections.MouseDown += DataGridOnMouseDown;
+            dgServerTypes.MouseDoubleClick += DataGridMouseDoubleClick;
+            dgServerTypes.MouseDown += DataGridOnMouseDown;
+
+            tbMaxLog.PreviewTextInput += Utils.OnUnsignedIntPreviewTextInput;
         }
+
+        void DataGridMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            GridView dg = sender as GridView;
+            if (!dg.IsClickedOnDataGridCell(e)) return;
+
+            if (dgConnections.Equals(dg))
+            {
+                EditConnection();
+            }
+            else if (dgServerTypes.Equals(dg))
+            {
+                EditServerType();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void DataGridOnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            GridView dg = sender as GridView;
+            if (!dg.IsClickedOnDataGridCell(e))
+                dg.SelectedIndex = -1;
+        }
+
 
         /// <summary>
         /// 
@@ -103,7 +138,7 @@ namespace SBUConfigurator
         void AddConnection()
         {
             var dataForm = new ConnectionDataForm();
-            if (dataForm.ShowModal(this) == ResultCodes.Apply)
+            if (dataForm.ShowModal(this, this.serverTypes.ToList()) == ResultCodes.Apply)
             {
                 var conn = dataForm.GetEntity();
                 Connection.AttachServerTypeObjects(conn, this.serverTypes.ToList());
@@ -120,7 +155,7 @@ namespace SBUConfigurator
             var conn = dgConnections.SelectedItem as Connection;
 
             var dataForm = new ConnectionDataForm();
-            if (dataForm.ShowModal(this, conn) == ResultCodes.Apply)
+            if (dataForm.ShowModal(this, conn, this.serverTypes.ToList()) == ResultCodes.Apply)
             {
                 Connection.AttachServerTypeObjects(conn, this.serverTypes.ToList());
                 dgConnections.Items.Refresh();
@@ -132,11 +167,52 @@ namespace SBUConfigurator
         /// </summary>
         void DeleteConnection()
         {
-            if (MessageBoxes.DeleteRequest(this))
+            //var selected = dgConnections.SelectedItems.Cast<Connection>().ToList();
+            //if (selected.Count == 1)
+            //{
+            //    if (MessageBoxes.DeleteRequest(this))
+            //    {
+            //        //var entity = dgConnections.SelectedItem as Connection;
+            //        this.connections.Remove(selected[0]);
+            //    }
+            //}
+            //else if (selected.Count > 1)
+            //{
+            //    if (MessageBoxes.DeleteAllRequest(this))
+            //    {
+            //        foreach(var e in selected)
+            //        {
+            //            this.connections.Remove(e);
+            //        }
+            //    }
+            //}
+
+            DeleteItems(dgConnections, connections);
+        }
+
+        bool DeleteItems<T>(DataGrid dg, ObservableCollection<T> collection)
+        {
+            var selected = dg.SelectedItems.Cast<T>().ToList();
+            if (selected.Count == 1)
             {
-                var entity = dgConnections.SelectedItem as Connection;
-                this.connections.Remove(entity);
+                if (MessageBoxes.DeleteRequest(this))
+                {
+                    collection.Remove(selected[0]);
+                    return true;
+                }
             }
+            else if (selected.Count > 1)
+            {
+                if (MessageBoxes.DeleteAllRequest(this))
+                {
+                    foreach (var e in selected)
+                    {
+                        collection.Remove(e);
+                    }
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -149,6 +225,9 @@ namespace SBUConfigurator
             {
                 var type = dataForm.GetEntity();
                 this.serverTypes.Add(type);
+
+                Connection.AttachServerTypeObjects(this.connections.ToList(), this.serverTypes.ToList());
+                dgConnections.Items.Refresh();
             }
         }
 
@@ -163,7 +242,7 @@ namespace SBUConfigurator
             if (dataForm.ShowModal(this, type) == ResultCodes.Apply)
             {
                 //Connection.AttachServerTypeObjects(this.connections.ToList(), this.serverTypes.ToList());
-                dgConnections.Items.Refresh();
+                //dgConnections.Items.Refresh();
             }
         }
 
@@ -172,11 +251,35 @@ namespace SBUConfigurator
         /// </summary>
         void DeleteServerType()
         {
-            if (MessageBoxes.DeleteRequest(this))
+            //if (MessageBoxes.DeleteRequest(this))
+            //{
+            //    var entity = dgServerTypes.SelectedItem as ServerType;
+            //    this.serverTypes.Remove(entity);
+
+            //    Connection.AttachServerTypeObjects(this.connections.ToList(), this.serverTypes.ToList());
+            //    dgConnections.Items.Refresh();
+            //}
+
+            bool res = DeleteItems(dgServerTypes, serverTypes);
+            if (res)
             {
-                var entity = dgServerTypes.SelectedItem as ServerType;
-                this.serverTypes.Remove(entity);
+                Connection.AttachServerTypeObjects(this.connections.ToList(), this.serverTypes.ToList());
+                dgConnections.Items.Refresh();
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        void LogPathShowDialog(object sender, RoutedEventArgs e)
+        {
+            var fbd = new System.Windows.Forms.FolderBrowserDialog();
+            fbd.SelectedPath = tbLogPath.Text;
+            fbd.ShowNewFolderButton = true;
+            fbd.Description = "Выберите каталог";
+
+            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                tbLogPath.Text = fbd.SelectedPath;
         }
 
         /// <summary>
@@ -184,6 +287,18 @@ namespace SBUConfigurator
         /// </summary>
         void Apply()
         {
+            if (this.connections.Any() && !this.serverTypes.Any())
+            {
+                MessageBoxes.Warning(this, "Необходимо добавить хотя бы один тип сервера");
+                return;
+            }
+
+            if (!this.connections.ToList().All(x => x.ServerType != null))
+            {
+                MessageBoxes.Warning(this, "У некоторых соединений не установлен тип сервера");
+                return;
+            }
+
             SqlBackUpperLibConfig config = App.CurrentConfig;
 
             config.Connections = this.connections.ToList();

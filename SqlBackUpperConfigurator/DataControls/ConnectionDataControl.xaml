@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:SBUConfigurator"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        Name="_this"
+        Name="_this" 
 		Width="300" >
-    <Grid>
+    <Grid x:Name="gMain">
         <StackPanel>
             <local:TextBox x:Name="tbServer" Label="Сервер:" TabIndex="0" Value="{Binding Path=Server, Mode=TwoWay}" 
                     ControlSize="*" LabelPosition="Top" />
@@ -18,7 +18,14 @@
                     ControlSize="*" LabelPosition="Top" />
             <local:TextBox x:Name="tbPassword" Label="Пароль:" TabIndex="3" Value="{Binding Path=Password, Mode=TwoWay}" 
                     ControlSize="*" LabelPosition="Top" />
-            
+
+            <Button x:Name="bTest" Height="30" Margin="0,20,0,0" Command="local:AppCommands.TestCommand" ToolTip="Проверить соединение">
+                <StackPanel Orientation="Horizontal">
+                    <!--<Image Source="/Tickets;component/Resources/world_32.png"/>-->
+                    <TextBlock Text="Проверить соединение" VerticalAlignment="Center" Margin="10,5"/>
+                </StackPanel>
+            </Button>
+
             <Grid Margin="0,10,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -26,7 +33,7 @@
                 </Grid.ColumnDefinitions>
                 <local:TextBox x:Name="tbBackupPath" Label="Путь к бэкапу:" LabelPosition="Top"
                        ControlSize="*" Margin="0,-5,0,0"                    Value="{Binding Path=BackupPath, Mode=TwoWay}"  />
-                <Button x:Name="bTempPathShowDialog"  Grid.Column="2" ToolTip="Выбрать каталог"
+                <Button x:Name="bBackupPathShowDialog"  Grid.Column="2" ToolTip="Выбрать каталог"
                        VerticalAlignment="Bottom" Height="25" Width="25" Content="..."  Margin="5,0,0,0"/>
             </Grid>
 
@@ -35,13 +42,6 @@
                 <xctk:IntegerUpDown x:Name="tbMaxBackups" Value="{Binding Path=MaxBackups, Mode=TwoWay}"
                        Minimum="1" Width="60" TabIndex="5"/>
             </StackPanel>
-
-            <Button x:Name="bTest" Height="30" Margin="0,15,0,0" Command="local:AppCommands.TestCommand" ToolTip="Проверить соединение">
-                <StackPanel Orientation="Horizontal">
-                    <!--<Image Source="/Tickets;component/Resources/world_32.png"/>-->
-                    <TextBlock Text="Проверить соединение" VerticalAlignment="Center" Margin="10,5"/>
-                </StackPanel>
-            </Button>
 
         </StackPanel>
     </Grid>

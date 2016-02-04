@@ -21,6 +21,7 @@ namespace SBUConfigurator
         public static readonly CultureInfo AppCulture = CultureInfo.CreateSpecificCulture("ru-RU");
         public static readonly string AppAssemblyName = Assembly.GetEntryAssembly().FullName;
         public static readonly string ASSEMBLY_NAME = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+        public static readonly string SQLBACKUPPER_CONFIG_FILE_NAME = "SqlBackUpper.exe.cfg";
 
         public static SqlBackUpperLibConfig CurrentConfig;
 
@@ -42,7 +43,7 @@ namespace SBUConfigurator
         /// </summary>
         public static bool AppInit()
         {
-            CurrentConfig = new SqlBackUpperLibConfig(ASSEMBLY_NAME);
+            CurrentConfig = new SqlBackUpperLibConfig(ASSEMBLY_NAME, SQLBACKUPPER_CONFIG_FILE_NAME);
             if (CurrentConfig.IsSetConfig)
             {
                 Connection.AttachServerTypeObjects(CurrentConfig.Connections, CurrentConfig.ServerTypes);

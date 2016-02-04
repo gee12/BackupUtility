@@ -408,7 +408,7 @@ namespace Microsoft.Shell
             // Obtain a reference to the remoting service exposed by the server dayNum.e the first instance of the application
             IPCRemoteService firstInstanceRemoteServiceReference = (IPCRemoteService)RemotingServices.Connect(typeof(IPCRemoteService), remotingServiceUrl);
 
-            // Check that the remote service exists, in some cases the first instance may not yet have created one, in which case
+            // Check that the remote service founded, in some cases the first instance may not yet have created one, in which case
             // the second instance should just exit
             if (firstInstanceRemoteServiceReference != null)
             {

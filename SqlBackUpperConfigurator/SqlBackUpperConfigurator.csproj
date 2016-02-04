@@ -81,6 +81,7 @@
     <Page Include="App.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Class1.cs" />
     <Compile Include="DataControls\ConnectionDataControl.xaml.cs">
       <DependentUpon>ConnectionDataControl.xaml</DependentUpon>
     </Compile>

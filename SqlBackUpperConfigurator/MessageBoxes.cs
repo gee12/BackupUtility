@@ -29,7 +29,7 @@ namespace SBUConfigurator
         public const string MsgEmptyField = "Значение <{0}> не заполнено!";
         public const string MsgCatDeleteRequest = "Выбран элемент с ID: [{0}]\nУдалить элемент из базы данных?";
         public const string MsgCatDeleteRequestSimple = "Удалить выбранный элемент?";
-        public const string MsgCatDeleteAllRequestSimple = "Удалить все выбранные элементы из базы данных?";
+        public const string MsgCatDeleteAllRequestSimple = "Удалить все выбранные элементы?";
         public const string MsgCatCascadeDeleteRequest = "Элемент с ID: [{0}] содержится в записях других таблиц:\n\n{1}\n\nВыполнить каскадное удаление элемента вместе с зависимыми записями?";
         public const string MsgCatCascadeDeleteMessage = "Элемент с ID: [{0}] содержится в записях других таблиц:\n\n{1}\n\nСначала удалите все зависимые записи.";
         public const string MsgNotUserDefined = "Пользователь не указан!";

@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:SBUConfigurator"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        Title="Конфигуратор SqlBackUpper" Height="600" Width="800" Icon="ico.ico">
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:windowStyle="clr-namespace:System.Diagnostics;assembly=System"
+        Title="Конфигуратор SqlBackUpper.exe" Height="600" Width="800" Icon="ico.ico" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Image x:Key="add_32" Source="Resources/add_32.png"/>
         <Image x:Key="add_32_2" Source="Resources/add_32.png"/>
@@ -16,6 +18,14 @@
         <Style x:Key="dataGridHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
         </Style>
+        <!---->
+        <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues"
+                            ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="windowStyle:ProcessWindowStyle"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
     </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="local:AppCommands.ApplyCommand" Executed="OnCommadExecute"/>
@@ -37,7 +47,7 @@
         <TabControl>
             <TabItem Header="Общее">
                 <Grid x:Name="gBase">
-                    <StackPanel Margin="5">
+                    <StackPanel Margin="10">
                         <local:TextBox Value="{Binding Path=BackupNameMask, Mode=TwoWay}" Label="Маска имени бэкапа:  " ControlSize="*"
                                        Margin="0,10"/>
                         
@@ -48,23 +58,23 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <Label Content="Путь к лог-файлу:        " Margin="-5,0" ToolTip="Путь к лог-файлу"/>
-                            <TextBox x:Name="tbTempPath" Grid.Column="1" 
-                                            Text="{Binding Path=LogPath, Mode=TwoWay}"  />
-                            <Button x:Name="bTempPathShowDialog"  Grid.Column="2" ToolTip="Выбрать каталог"
+                            <TextBox x:Name="tbLogPath" Grid.Column="1" 
+                                            Text="{Binding Path=LogPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  />
+                            <Button x:Name="bLogPathShowDialog"  Grid.Column="2" ToolTip="Выбрать каталог"
                                                 Height="23" Width="25" Content="..."  Margin="5,0,0,0"/>
                         </Grid>
 
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                             <Label Content="Максимум логов:       " Margin="-4,0,0,0"/>
-                            <xctk:IntegerUpDown x:Name="tbLogClear" Value="{Binding Path=MaxLogs, Mode=TwoWay}"
+                            <xctk:IntegerUpDown x:Name="tbMaxLog" Value="{Binding Path=MaxLogs, Mode=TwoWay}"
                                                Minimum="1" Width="60"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
                             <Label Content="Стиль окна:                 " Margin="-5,0,0,0" VerticalAlignment="Center"/>
-                            <ComboBox x:Name="cbNotifLevel"  Margin="0,0" Width="150" TabIndex="7" Height="25"
-                                    SelectedItem="{Binding Path=WindowStyle, Mode=TwoWay}"
-                                    DisplayMemberPath="DisplayName" />
+                            <ComboBox x:Name="cbWindowsStyle"  Margin="0,0" Width="150" TabIndex="7" Height="25"
+                                      ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+                                    SelectedItem="{Binding Path=WindowStyle, Mode=TwoWay}" />
                         </StackPanel>
                         
                         <CheckBox Content="Ожидать нажатие клавиши для выхода" IsChecked="{Binding Path=ReadKeyInFinish, Mode=TwoWay}"/>
@@ -86,8 +96,15 @@
                         <local:ActionButton Content="{StaticResource delete_32}" Margin="5,0,0,0" Command="local:AppCommands.DeleteConnectCommand" ToolTip="Удалить выбранный"/>
                     </StackPanel>
 
-                    <local:GridView Grid.Row="1" Margin="0,5,0,0" x:Name="dgConnections">
-                        <DataGrid.Columns>
+                <local:GridView Grid.Row="1" Margin="0,5,0,0" x:Name="dgConnections" SelectionMode="Extended">
+                    <!--<Style TargetType="DataGridCell">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=Dufferent}" Value="True">
+                                <Setter Property="Background" Value="Green"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>-->
+                    <DataGrid.Columns>
                             <DataGridTextColumn Header="Сервер" Binding="{Binding Server}" Width="*" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
                             <DataGridTextColumn Header="Тип сервера" Binding="{Binding ServerType.Name}" Width="*" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
                             <DataGridTextColumn Header="База данных" Binding="{Binding Database}" Width="*" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
@@ -112,7 +129,7 @@
                         <local:ActionButton Content="{StaticResource delete_32_2}" Margin="5,0,0,0" Command="local:AppCommands.DeleteServerTypeCommand" ToolTip="Удалить выбранный"/>
                     </StackPanel>
 
-                    <local:GridView Grid.Row="1" Margin="0,5,0,0" x:Name="dgServerTypes">
+                    <local:GridView Grid.Row="1" Margin="0,5,0,0" x:Name="dgServerTypes" SelectionMode="Extended">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="40" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
                             <DataGridTextColumn Header="Имя" Binding="{Binding Name}" Width="180" HeaderStyle="{StaticResource dataGridHeaderStyle}"/>
